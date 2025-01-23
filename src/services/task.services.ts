@@ -1,9 +1,11 @@
 import { connect } from "http2";
 import PrismaClient from "utils/PrimsaClient";
+import ProjectServices from "./project.services";
 
 class TaskServices {
   public tasks = PrismaClient.task;
   public users = PrismaClient.user;
+  public projectServices = new ProjectServices();
 
   public getTasks = async (take: number, skip: number) => {
     // skip and take are for pagination
@@ -83,6 +85,7 @@ class TaskServices {
       },
       data: { ...data },
     });
+    await this.projectServices.checkProjectCompleted(task.projectId); // to mark project completed if all the task is marked completed
 
     return task;
   };

@@ -1,92 +1,136 @@
-import UserServices from "@/services/user.services";
+import TaskServices from "@/services/task.services";
 import { Request, Response } from "express";
-class UserController {
-  public userServices = new UserServices();
+class TaskController {
+  public taskServices = new TaskServices();
 
-  public createUser = async (req: Request, res: Response) => {
+  public createTask = async (req: Request, res: Response) => {
     try {
       const body = req.body;
-      if (!body.name || !body.email) {
-        res.status(400).send({ message: "name or email not specified" });
+      if (
+        !body.name ||
+        body.description ||
+        body.endDateTime ||
+        body.userId ||
+        body.projectId
+      ) {
+        res.status(400).send({ message: "data not fully specified" });
       }
-      const user = await this.userServices.createUser(body.name, body.email);
-      if (user) {
+      const task = await this.taskServices.createTask(
+        new Date(body.endDateTime),
+        body.name,
+        body.description,
+        body.name,
+        body.description
+      );
+      if (task) {
         res
           .status(200)
-          .send({ message: "user created successfully", data: user });
+          .send({ message: "task created successfully", data: task });
+        return;
       }
+      res.status(404).send({ message: "something went wrong" });
     } catch {
       res.status(404).send({ message: "something went wrong" });
     }
   };
 
-  public getUsers = async (req: Request, res: Response) => {
+  public getTasks = async (req: Request, res: Response) => {
     try {
       const perPage = (req.body.perPage as number) || 20;
       const pageNumber = (req.body.perPage as number) || 1;
       const skip = (pageNumber - 1) * perPage;
-      const users = await this.userServices.getUsers(perPage, skip);
-      if (users) {
-        res.status(200).send({ message: "success", data: users });
+      const tasks = await this.taskServices.getTasks(perPage, skip);
+      if (tasks) {
+        res.status(200).send({ message: "success", data: tasks });
       }
     } catch {
       res.status(404).send({ message: "something went wrong" });
     }
   };
 
-  public getUserDetails = async (req: Request, res: Response) => {
+  public getTaskDetails = async (req: Request, res: Response) => {
     try {
-      const userId = req.params.id;
-      if (!userId) {
-        res.status(400).send({ message: "userId not specified" });
+      const taskId = req.params.id;
+      if (!taskId) {
+        res.status(400).send({ message: "taskId not specified" });
       }
-      const user = await this.userServices.getUserDetails(userId);
-      if (user) {
-        res.status(200).send({ message: "success", data: user });
+      const task = await this.taskServices.getTaskDetails(taskId);
+      if (task) {
+        res.status(200).send({ message: "success", data: task });
       }
     } catch {
       res.status(404).send({ message: "something went wrong" });
     }
   };
 
-  public deleteUser = async (req: Request, res: Response) => {
+  public deleteTask = async (req: Request, res: Response) => {
     try {
-      const userId = req.params.id;
-      if (!userId) {
-        res.status(400).send({ message: "userId not specified" });
+      const taskId = req.params.id;
+      if (!taskId) {
+        res.status(400).send({ message: "taskId not specified" });
       }
-      const user = await this.userServices.deleteUser(userId);
-      if (user) {
-        res.status(200).send({ message: "success, deleted user", data: user });
+      const task = await this.taskServices.deleteTask(taskId);
+      if (task) {
+        res.status(200).send({ message: "success", data: task });
       }
     } catch {
       res.status(404).send({ message: "something went wrong" });
     }
   };
 
-  public updateUser = async (req: Request, res: Response) => {
+  public updateTask = async (req: Request, res: Response) => {
     try {
-      const userId = req.params.id;
+      const taskId = req.params.id;
       const body = req.body;
       let data = {};
+
       if (body.name) {
         data = {
           ...data,
           name: body.name,
         };
       }
-      if (body.email) {
+
+      if (body.description) {
         data = {
           ...data,
-          email: body.email,
+          description: body.description,
         };
       }
 
-      const user = await this.userServices.updateUser(userId, data);
-      if (user) {
+      if (body.endDateTime) {
+        data = {
+          ...data,
+          endDateTime: new Date(body.endDateTime),
+        };
+      }
+
+      if (body.userId) {
+        data = {
+          ...data,
+          userId: body.userId,
+        };
+      }
+
+      if (body.projectId) {
+        data = {
+          ...data,
+          projectId: body.projectId,
+        };
+      }
+
+      if (body.status) {
+        data = {
+          ...data,
+          status: body.status,
+        };
+      }
+
+      const task = await this.taskServices.updateTask(taskId, data);
+      if (task) {
         res
           .status(200)
-          .send({ message: "user updated successfully", data: user });
+          .send({ message: "task updated successfully", data: task });
       }
     } catch {
       res.status(404).send({ message: "something went wrong" });
@@ -94,4 +138,4 @@ class UserController {
   };
 }
 
-export default UserController;
+export default TaskController;
