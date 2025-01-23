@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-class ProjectRoute {
+class UserRoute {
   public router = Router();
   public path = "/users";
 
@@ -16,3 +16,5 @@ class ProjectRoute {
     this.router.delete(`${this.path}/:id`);
   }
 }
+
+export default UserRoute;

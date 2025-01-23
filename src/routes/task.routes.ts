@@ -16,3 +16,5 @@ class TaskRouter {
     this.router.delete(`${this.path}/:id`);
   }
 }
+
+export default TaskRouter;

@@ -14,3 +14,5 @@ class ProjectRoute {
     this.router.put(`${this.path}/:id`);
   }
 }
+
+export default ProjectRoute;

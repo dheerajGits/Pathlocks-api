@@ -22,7 +22,7 @@ enum Status {
 model Project {
   id          String   @id @default(uuid())
   name        String
-  descriptiom String
+  description String
   startDate   DateTime @default(now())
   endDateTime DateTime
   status      Status   @default(ACTIVE)
@@ -43,6 +43,6 @@ model task {
 model User {
   id    String @id @default(uuid())
   name  String
-  email String
+  email String @unique
   task  task[]
 }
